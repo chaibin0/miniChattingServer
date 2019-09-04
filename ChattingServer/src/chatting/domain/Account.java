@@ -1,48 +1,29 @@
 package chatting.domain;
 
-import java.net.InetAddress;
-
-public class Account implements java.io.Serializable {
-
-  /**
-   * uid임.
-   */
-  private static final long serialVersionUID = -3760842113195021932L;
+public class Account {
 
   String userId;
 
-  String number;
+  Room room;
 
-  InetAddress address;
+  /**
+   * 채팅방에 입장한 유저정보.
+   * 
+   * @param userId 유저 아이디
+   * @param room 채팅방
+   */
+  public Account(String userId, Room room) {
 
-  int port;
+    this.userId = userId;
+    this.room = room;
+  }
+
+
 
   public Account(String userId) {
 
     this.userId = userId;
   }
-
-  public Account(String userId, String number, InetAddress address, int port) {
-
-    this.userId = userId;
-    this.number = number;
-    this.address = address;
-    this.port = port;
-  }
-
-
-
-  public String getNumber() {
-
-    return number;
-  }
-
-
-  public void setNumber(String number) {
-
-    this.number = number;
-  }
-
 
   public String getUserId() {
 
@@ -56,31 +37,41 @@ public class Account implements java.io.Serializable {
   }
 
 
+  @Override
+  public int hashCode() {
 
-  public InetAddress getAddress() {
-
-    return address;
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((room == null) ? 0 : room.hashCode());
+    result = prime * result + ((userId == null) ? 0 : userId.hashCode());
+    return result;
   }
 
+  @Override
+  public boolean equals(Object obj) {
 
-
-  public int getPort() {
-
-    return port;
-  }
-
-
-
-  public void setAddress(InetAddress address) {
-
-    this.address = address;
-  }
-
-
-
-  public void setPort(int port) {
-
-    this.port = port;
+    if (this == obj) {
+      return true;
+    }
+    if (!(obj instanceof Account)) {
+      return false;
+    }
+    Account other = (Account) obj;
+    if (room == null) {
+      if (other.room != null) {
+        return false;
+      }
+    } else if (!room.equals(other.room)) {
+      return false;
+    }
+    if (userId == null) {
+      if (other.userId != null) {
+        return false;
+      }
+    } else if (!userId.equals(other.userId)) {
+      return false;
+    }
+    return true;
   }
 
 }

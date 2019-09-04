@@ -1,7 +1,7 @@
 package chatting.domain;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Room {
 
@@ -13,7 +13,7 @@ public class Room {
 
   private int count;
 
-  private List<Account> users;
+  private Set<String> accounts = new HashSet<>();
 
   private boolean isPrivate;
 
@@ -40,11 +40,30 @@ public class Room {
   }
 
 
-  public Room() {
+  @Override
+  public int hashCode() {
 
-    this.users = new ArrayList<>();
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + (int) (roomId ^ (roomId >>> 32));
+    return result;
   }
 
+  @Override
+  public boolean equals(Object obj) {
+
+    if (this == obj) {
+      return true;
+    }
+    if (!(obj instanceof Room)) {
+      return false;
+    }
+    Room other = (Room) obj;
+    if (roomId != other.roomId) {
+      return false;
+    }
+    return true;
+  }
 
   public long getRoomId() {
 
@@ -56,13 +75,6 @@ public class Room {
 
     return count;
   }
-
-
-  public List<Account> getUsers() {
-
-    return users;
-  }
-
 
   public boolean isPrivate() {
 
@@ -98,6 +110,12 @@ public class Room {
 
     this.name = name;
   }
+
+  public Set<String> getAccounts() {
+
+    return accounts;
+  }
+
 
 
 }
