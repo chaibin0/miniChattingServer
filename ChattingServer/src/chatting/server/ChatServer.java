@@ -32,7 +32,7 @@ public class ChatServer {
         String line = "";
         while ((line = reader.readLine()) != null) {
           System.out.println("chatServer" + line);
-          String[] temp = line.split("&", -1);
+          String[] temp = line.split("&", -1);    //빈 채팅창도 출력
           userIds = room.getAccounts();
 
           switch (temp[0]) {
@@ -59,7 +59,6 @@ public class ChatServer {
 
     } catch (IOException e) {
 
-      System.out.println("event!");
       writer.write("fail");
       writer.flush();
     } finally {

@@ -18,12 +18,12 @@ import java.util.StringTokenizer;
 public class MainServer {
 
   /**
-   * 채팅방 번호를 이용해서 채팅방의 객체를 가져온다. 
+   * 채팅방 번호를 이용해서 채팅방의 객체를 가져온다.
    */
   private static final Map<Long, Room> rooms = new HashMap<>();
 
   /**
-   * 채팅방의 접속한 계정을 이해서 소켓 데이터를 가져온다. 
+   * 채팅방의 접속한 계정을 이해서 소켓 데이터를 가져온다.
    */
   private static final Map<Account, PrintWriter> user = new HashMap<>();
 
@@ -45,12 +45,12 @@ public class MainServer {
 
     try {
       Runnable clienthandler = () -> {
-        try {
-          Socket clientSocket = sock;
-          BufferedReader br =
-              new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-          PrintWriter writer =
-              new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+        try (Socket clientSocket = sock;
+            BufferedReader br =
+                new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            PrintWriter writer =
+                new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()))) {
+
 
           String line = "";
           String roomNumber = "";
@@ -65,18 +65,12 @@ public class MainServer {
               userId = st.nextToken();
               String pwd = st.nextToken();
               LoginServer.findByUserIdAndPwd(userId, pwd, clientSocket, writer);
-              sock.close();
-              writer.close();
-              br.close();
               break;
 
             case "roomList":
               userId = st.nextToken();
               System.out.println("RoomServer.getRoom() : " + userId);
               RoomServer.getRoom(userId, clientSocket, writer);
-              sock.close();
-              writer.close();
-              br.close();
               break;
 
             case "roomIn":
@@ -92,9 +86,6 @@ public class MainServer {
                 title.add(st.nextToken());
               }
               RoomServer.makeRoom(userId, title.toString(), writer);
-              sock.close();
-              writer.close();
-              br.close();
               break;
 
             case "signup":

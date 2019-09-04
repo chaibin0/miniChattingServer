@@ -60,7 +60,7 @@ public class RoomServer {
 
     Room room = new Room();
     room.setName(title);
-    room.setCount(1);
+    room.setCount(0);
     room.setRoomId(Room.getIncrement());
     MainServer.getRooms().put(room.getRoomId(), room);
 

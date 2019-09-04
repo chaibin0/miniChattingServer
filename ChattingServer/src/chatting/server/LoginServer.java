@@ -30,11 +30,18 @@ public class LoginServer {
 
     try (BufferedReader br = new BufferedReader(new FileReader("account.txt"))) {
 
+      // 아이디가 이미 존재할 경우
+      if (MainServer.getUserInfo().containsKey(userId)) {
+        writer.println("exist");
+        writer.flush();
+        return;
+      }
       String line = "";
 
       String tempId;
       String tempPwd;
       String tempName;
+
 
       while ((line = br.readLine()) != null) {
         StringTokenizer st = new StringTokenizer(line);
@@ -77,24 +84,26 @@ public class LoginServer {
    */
   public static void removeUserFromProgram(String userId) {
 
-    System.out.println("아이디 제거" + userId);
-    List<Room> data = MainServer.getUserInfo().get(userId);
-    System.out.println("remove data " + data.size());
+    // 채팅방에 남아있을 경우에 다 삭제해준다.
+    if (MainServer.getUserInfo().containsKey(userId)) {
+      List<Room> data = MainServer.getUserInfo().get(userId);
+      System.out.println("remove data " + data.size());
 
-    for (Room room : data) {
-      // 계정접속 제거
-      Account account = new Account(userId, room);
-      MainServer.getUser().remove(account);
+      for (Room room : data) {
+        // 계정접속 제거
+        Account account = new Account(userId, room);
+        MainServer.getUser().remove(account);
 
-      // 방에서 퇴장
-      room.getAccounts().remove(userId);
-      if (room.getAccounts().size() == 0) {
-        MainServer.getRooms().remove(room.getRoomId());
-      } else {
-        room.setCount(room.getCount() - 1);
+        // 방에서 퇴장
+        room.getAccounts().remove(userId);
+        if (room.getAccounts().size() == 0) {
+          MainServer.getRooms().remove(room.getRoomId());
+        } else {
+          room.setCount(room.getCount() - 1);
+        }
+
+        MainServer.getUserInfo().remove(userId);
       }
-
-      MainServer.getUserInfo().remove(userId);
     }
   }
 
@@ -106,10 +115,16 @@ public class LoginServer {
    * @param name 이름
    * @param writer 클라이언트 소켓 출력스트림
    */
-  public static void signUp(String userId, String pwd, String name, PrintWriter writer) {
+  public static synchronized void signUp(String userId, String pwd, String name,
+      PrintWriter writer) {
 
     System.out.println("signup()");
+
     try (BufferedWriter bw = new BufferedWriter(new FileWriter("account.txt", true))) {
+      if (alreadyExisted(userId)) {
+        writer.println("exist");
+        return;
+      }
       bw.write(userId + " " + pwd + " " + name + "\n");
       writer.println("success");
       writer.flush();
@@ -118,5 +133,25 @@ public class LoginServer {
       e.printStackTrace();
     }
 
+  }
+
+  private static boolean alreadyExisted(String userId) {
+
+    try (BufferedReader br = new BufferedReader(new FileReader("account.txt"))) {
+      String line = "";
+      StringTokenizer lineSplit;
+      while ((line = br.readLine()) != null) {
+        lineSplit = new StringTokenizer(line);
+        if (userId.equals(lineSplit.nextToken())) {
+          return true;
+        }
+      }
+      return false;
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return false;
   }
 }
