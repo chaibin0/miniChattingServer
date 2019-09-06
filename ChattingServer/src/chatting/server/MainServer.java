@@ -100,11 +100,7 @@ public class MainServer {
               break;
             default:
               break;
-
           }
-
-
-
         } catch (IOException e) {
           e.printStackTrace();
         }

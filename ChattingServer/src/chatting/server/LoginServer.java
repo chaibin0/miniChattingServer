@@ -10,10 +10,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.StringTokenizer;
-
-
 
 public class LoginServer {
 
@@ -94,7 +95,7 @@ public class LoginServer {
         Account account = new Account(userId, room);
         MainServer.getUser().remove(account);
 
-        // 방에서 퇴장
+        // 방에서 퇴장, 방에 사람이 없을 경우 방도 삭제
         room.getAccounts().remove(userId);
         if (room.getAccounts().size() == 0) {
           MainServer.getRooms().remove(room.getRoomId());
@@ -108,7 +109,7 @@ public class LoginServer {
   }
 
   /**
-   * 회원가입 데이터 저장 메소드이다.
+   * 회원가입 데이터 저장 메소드입니다.
    * 
    * @param userId 유저 아이디
    * @param pwd 패스워드
@@ -120,6 +121,8 @@ public class LoginServer {
 
     System.out.println("signup()");
 
+    // 파일 존재 확인
+    checkFile();
     try (BufferedWriter bw = new BufferedWriter(new FileWriter("account.txt", true))) {
       if (alreadyExisted(userId)) {
         writer.println("exist");
@@ -130,6 +133,19 @@ public class LoginServer {
       writer.flush();
     } catch (IOException e) {
       writer.println("fail");
+      e.printStackTrace();
+    }
+
+  }
+
+  private static void checkFile() {
+
+    try {
+      Path file = Paths.get("account.txt");
+      if (!Files.exists(file)) {
+        Files.createFile(file);
+      }
+    } catch (IOException e) {
       e.printStackTrace();
     }
 

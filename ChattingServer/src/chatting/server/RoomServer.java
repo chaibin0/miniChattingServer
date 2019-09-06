@@ -124,6 +124,7 @@ public class RoomServer {
           }
           PrintWriter otherWriter = MainServer.getUser().get(new Account(others, room));
           otherWriter.println("in" + "&" + userId + "&" + number);
+          otherWriter.flush();
         }
 
         ChatServer chatServer = new ChatServer();
