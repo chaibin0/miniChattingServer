@@ -20,10 +20,9 @@ public class RoomServer {
    * 모든 방 리스트를 가져와서 클라이언트에게 리스트를 넘겨준다.
    * 
    * @param userId 유저 아이디
-   * @param clientSocket 클라이언트 소켓
    * @param writer 소켓 출력 버퍼
    */
-  public static void getRoom(String userId, Socket clientSocket, PrintWriter writer) {
+  public static void getRoom(String userId, PrintWriter writer) {
 
     System.out.println("RoomServer : getRoom()");
 
@@ -46,6 +45,63 @@ public class RoomServer {
 
   }
 
+  /**
+   * 클라이언트로부터 정보를 받아 채팅방을 찾는 메소드.
+   * 
+   * @param userId 유저아이디
+   * @param type 카테고리
+   * @param name 정보
+   * @param writer 클라이언트 출력 소켓
+   */
+  public static void searchRoom(String userId, String type, String name, PrintWriter writer) {
+
+    System.out.println("searchRoom : getRoom()");
+
+    boolean isNotFind = true;
+    Set<Long> keys = MainServer.getRooms().keySet();
+
+    for (long key : keys) {
+      if (search(key, type, name)) {
+        isNotFind = false;
+        StringJoiner sj = new StringJoiner(",");
+        sj.add(String.valueOf(MainServer.getRooms().get(key).getRoomId()));
+        sj.add(MainServer.getRooms().get(key).getName());
+        sj.add(String.valueOf(MainServer.getRooms().get(key).getCount()));
+        writer.println(sj);
+        writer.flush();
+      }
+    }
+    if (isNotFind) {
+      writer.println("");
+      writer.flush();
+    }
+  }
+
+  private static boolean search(long key, String type, String name) {
+
+    if (type.equals("number") && key == Long.parseLong(name)) {
+      return true;
+    }
+
+    if (type.equals("title") && checkName(MainServer.getRooms().get(key).getName(), name)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  private static boolean checkName(String searchName, String roomName) {
+
+    if (searchName.contains(roomName)) {
+      return true;
+    }
+
+    if (roomName.contains(searchName)) {
+      return true;
+    }
+
+    return false;
+  }
 
   /**
    * 요청한 클라이언트에게 방을 만들어준다.
@@ -140,5 +196,7 @@ public class RoomServer {
       e.printStackTrace();
     }
   }
+
+
 
 }

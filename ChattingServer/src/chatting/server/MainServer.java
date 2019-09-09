@@ -36,8 +36,6 @@ public class MainServer {
 
   private ServerSocket serverSock;
 
-  private String userId;
-
   /**
    * 클라이언트 요청에 올때마다 스레드를 추가시킨다.
    */
@@ -54,33 +52,35 @@ public class MainServer {
 
           String line = "";
           String roomNumber = "";
-
+          String name = "";
           line = br.readLine();
           System.out.println(line);
-          StringTokenizer st = new StringTokenizer(line);
+          StringTokenizer st = new StringTokenizer(line, "&");
+          String order = st.nextToken();
+          String userId = st.nextToken();
 
-          switch (st.nextToken()) {
+          switch (order) {
             // find account
             case "find":
-              userId = st.nextToken();
               String pwd = st.nextToken();
               LoginServer.findByUserIdAndPwd(userId, pwd, clientSocket, writer);
               break;
 
             case "roomList":
-              userId = st.nextToken();
               System.out.println("RoomServer.getRoom() : " + userId);
-              RoomServer.getRoom(userId, clientSocket, writer);
+              RoomServer.getRoom(userId, writer);
               break;
-
+            case "searchRoomList":
+              String type = st.nextToken();
+              name = st.nextToken();
+              RoomServer.searchRoom(userId, type, name, writer);
+              break;
             case "roomIn":
-              userId = st.nextToken();
               roomNumber = st.nextToken();
               RoomServer.roomIn(userId, Long.parseLong(roomNumber), clientSocket);
               break;
 
             case "roomMake":
-              userId = st.nextToken();
               StringJoiner title = new StringJoiner(" ");
               while (st.hasMoreTokens()) {
                 title.add(st.nextToken());
@@ -89,13 +89,11 @@ public class MainServer {
               break;
 
             case "signup":
-              userId = st.nextToken();
               pwd = st.nextToken();
-              String name = st.nextToken();
+              name = st.nextToken();
               LoginServer.signUp(userId, pwd, name, writer);
               break;
             case "remove":
-              userId = st.nextToken();
               LoginServer.removeUserFromProgram(userId);
               break;
             default:
@@ -142,12 +140,6 @@ public class MainServer {
   public ServerSocket getServerSock() {
 
     return serverSock;
-  }
-
-
-  public String getUserId() {
-
-    return userId;
   }
 
   public static Map<String, List<Room>> getUserInfo() {
