@@ -29,6 +29,9 @@ public class LoginServer {
   public static synchronized void findByUserIdAndPwd(String userId, String pwd, Socket clientSocket,
       PrintWriter writer) {
 
+    // Account 파일 검사
+    checkFile();
+
     try (BufferedReader br = new BufferedReader(new FileReader("account.txt"))) {
 
       // 아이디가 이미 존재할 경우
@@ -64,9 +67,9 @@ public class LoginServer {
       System.out.println("아이디가 없음");
       writer.flush();
 
-
     } catch (FileNotFoundException e) {
       System.out.println("로그인 파일이 없습니다 loginService");
+      makeAccountFile();
       writer.println("nothing");
       writer.flush();
       e.printStackTrace();
@@ -74,6 +77,18 @@ public class LoginServer {
       System.out.println("로그인 데이터 읽는 도중 에러가 걸렸습니다. loginService");
       writer.println("nothing");
       writer.flush();
+      e.printStackTrace();
+    }
+  }
+
+  private static void makeAccountFile() {
+
+    try {
+      Path path = Paths.get("account.txt");
+      if (!Files.exists(path)) {
+        Files.createFile(path);
+      }
+    } catch (IOException e) {
       e.printStackTrace();
     }
   }

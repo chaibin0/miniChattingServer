@@ -49,7 +49,6 @@ public class MainServer {
             PrintWriter writer =
                 new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()))) {
 
-
           String line = "";
           String roomNumber = "";
           String name = "";
@@ -112,15 +111,11 @@ public class MainServer {
         sock = serverSock.accept();
         Thread t = new Thread(clienthandler);
         t.start();
-        // writer = new PrintWriter(clientSocket.getOutputStream());
-        // writer.println("응답");
-        System.out.println("got a connection");
+        System.out.println("server응답");
       }
 
 
-    } catch (
-
-    IOException e) {
+    } catch (IOException e) {
       e.printStackTrace();
     }
 
@@ -135,11 +130,6 @@ public class MainServer {
   public static Map<Long, Room> getRooms() {
 
     return rooms;
-  }
-
-  public ServerSocket getServerSock() {
-
-    return serverSock;
   }
 
   public static Map<String, List<Room>> getUserInfo() {

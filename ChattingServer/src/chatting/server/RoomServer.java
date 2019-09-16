@@ -24,8 +24,6 @@ public class RoomServer {
    */
   public static void getRoom(String userId, PrintWriter writer) {
 
-    System.out.println("RoomServer : getRoom()");
-
     Set<Long> keys = MainServer.getRooms().keySet();
 
     if (keys.isEmpty()) {
@@ -54,8 +52,6 @@ public class RoomServer {
    * @param writer 클라이언트 출력 소켓
    */
   public static void searchRoom(String userId, String type, String name, PrintWriter writer) {
-
-    System.out.println("searchRoom : getRoom()");
 
     boolean isNotFind = true;
     Set<Long> keys = MainServer.getRooms().keySet();
@@ -112,7 +108,7 @@ public class RoomServer {
    */
   public static synchronized void makeRoom(String userId, String title, PrintWriter writer) {
 
-    System.out.print("RoomServer.makeRoom() : " + userId + " " + title);
+    System.out.print("make Room : " + userId + " " + title);
 
     Room room = new Room();
     room.setName(title);
@@ -158,8 +154,6 @@ public class RoomServer {
         // 유저 소켓정보 저장
         Account account = new Account(userId, room);
         MainServer.getUser().put(account, writer);
-        System.out.println("RoomIn : account: " + account.getUserId());
-
 
         // 계정에 채팅방 정보를 저장한다.
         MainServer.getRooms().put(number, room);
@@ -173,7 +167,6 @@ public class RoomServer {
         writer.flush();
 
         // 다른사람에게 입장했다는 것을 알린다.
-        System.out.println("userId : " + userId + " number : " + number);
         for (String others : userIds) {
           if (others == userId) {
             continue;
